@@ -16,23 +16,23 @@ export class Organization extends BaseEntity {
   @Column({ unique: true })
   name: string;
 
-  @Column()
-  country: string;
+  // @Column()
+  // country: string;
 
-  @Column()
-  address_line1: string;
+  // @Column()
+  // address_line1: string;
 
-  @Column({ nullable: true })
-  address_line2: string;
+  // @Column({ nullable: true })
+  // address_line2: string;
 
-  @Column()
-  city: string;
+  // @Column()
+  // city: string;
 
-  @Column()
-  state: string;
+  // @Column()
+  // state: string;
 
-  @Column()
-  zipcode: string;
+  // @Column()
+  // zipcode: string;
 
   @Index()
   @CreateDateColumn()

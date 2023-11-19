@@ -1,3 +1,3 @@
-export { Organization } from "./organization.entity";
-export { User } from "./user.entity";
-export { UserOrganization } from "./userOrganization.entity";
+export * from "./organization.entity";
+export * from "./user.entity";
+export * from "./userOrganization.entity";

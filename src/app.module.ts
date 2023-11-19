@@ -4,6 +4,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { Organization, User, UserOrganization } from "./entities";
+import { AuthModule, OrganizationModule, UserModule } from "./service";
+import { JWTModule } from "./utils/jwt.module";
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { Organization, User, UserOrganization } from "./entities";
       }),
       inject: [ConfigService],
     }),
+    JWTModule,
+    AuthModule,
+    UserModule,
+    OrganizationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

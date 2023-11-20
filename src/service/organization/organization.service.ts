@@ -68,4 +68,19 @@ export class OrganizationService {
       );
     }
   }
+
+  async getOrganizationByUserIdAndOrgId(userId: string, orgId: string) {
+    try {
+      const userOrganization = await this.userOrganizationRepository.findOne({
+        where: { userId, organizationId: orgId },
+      });
+
+      return userOrganization;
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

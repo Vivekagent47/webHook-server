@@ -10,11 +10,18 @@ export class LoginDto {
   password: string;
 }
 
+export class ReturnTokenDto {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export class ReturnAuthDataDto {
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-  };
+  tokens: ReturnTokenDto;
   user: User;
   userOrganizations: UserOrganization[];
+}
+
+export class RefreshTokenDto {
+  @IsNotEmpty()
+  refreshToken: string;
 }

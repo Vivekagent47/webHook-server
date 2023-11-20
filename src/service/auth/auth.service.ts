@@ -108,4 +108,38 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  async tokenRefresh(
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    try {
+      const decoded = this.jwtService.verify(refreshToken);
+
+      if (decoded.type !== "refresh") {
+        throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);
+      }
+
+      const user = await this.userService.findByEmail(decoded.email);
+      const userOrg = await this.orgService.getOrganizationByUserIdAndOrgId(
+        user.id,
+        decoded.orgId,
+      );
+
+      if (!userOrg || !user) {
+        throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);
+      }
+
+      const tokens = await this.generateAuthToken(user, {
+        orgId: userOrg.organizationId,
+        role: userOrg.role,
+      });
+
+      return tokens;
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

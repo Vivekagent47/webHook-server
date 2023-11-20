@@ -36,4 +36,16 @@ export class AuthController {
       );
     }
   }
+
+  @Post("refresh")
+  async refreshToken(@Body() data: { refreshToken: string }) {
+    try {
+      return await this.authService.tokenRefresh(data.refreshToken);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

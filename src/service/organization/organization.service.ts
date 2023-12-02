@@ -1,35 +1,45 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CreateOrganizationDto } from "src/dtos";
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from "@nestjs/common";
+import { InjectEntityManager } from "@nestjs/typeorm";
+import { AddMemberDto, CreateOrganizationDto } from "src/dtos";
 import { Organization, UserOrganization, UserRole } from "src/entities";
 import { createId } from "src/utils/help";
-import { Repository } from "typeorm";
+import { EntityManager } from "typeorm";
+import { UserService } from "../user";
 
 @Injectable()
 export class OrganizationService {
   constructor(
-    @InjectRepository(Organization)
-    private readonly organizationRepository: Repository<Organization>,
-    @InjectRepository(UserOrganization)
-    private readonly userOrganizationRepository: Repository<UserOrganization>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async createOrganization(org: CreateOrganizationDto, userId: string) {
     try {
-      const id = createId("org");
-      const newOrg = await this.organizationRepository.save({
-        ...org,
-        id: id,
+      const data = await this.entityManager.transaction(async (manager) => {
+        const newOrg = await manager.save(Organization, {
+          ...org,
+          id: createId("org"),
+        });
+
+        await manager.save(UserOrganization, {
+          id: createId("userOrg"),
+          userId,
+          organizationId: newOrg.id,
+          role: UserRole.OWNER,
+        });
+
+        return newOrg;
       });
 
-      await this.userOrganizationRepository.save({
-        id: createId("userOrg"),
-        userId,
-        organizationId: newOrg.id,
-        role: UserRole.OWNER,
-      });
-
-      return newOrg;
+      return data;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -40,7 +50,7 @@ export class OrganizationService {
 
   async getOrganizationById(id: string) {
     try {
-      const organization = await this.organizationRepository.findOne({
+      const organization = await this.entityManager.findOne(Organization, {
         where: { id },
       });
 
@@ -53,12 +63,15 @@ export class OrganizationService {
     }
   }
 
-  async getOrganizationsByUserId(userId: string) {
+  async getUserOrganizations(userId: string) {
     try {
-      const userOrganizations = await this.userOrganizationRepository.find({
-        where: { userId },
-        order: { createdAt: "DESC" },
-      });
+      const userOrganizations = await this.entityManager.find(
+        UserOrganization,
+        {
+          where: { userId },
+          order: { createdAt: "DESC" },
+        },
+      );
 
       return userOrganizations;
     } catch (err) {
@@ -69,13 +82,51 @@ export class OrganizationService {
     }
   }
 
-  async getOrganizationByUserIdAndOrgId(userId: string, orgId: string) {
+  async getUserOrganization(userId: string, orgId: string) {
     try {
-      const userOrganization = await this.userOrganizationRepository.findOne({
-        where: { userId, organizationId: orgId },
-      });
+      const userOrganization = await this.entityManager.findOne(
+        UserOrganization,
+        {
+          where: { userId, organizationId: orgId },
+        },
+      );
 
       return userOrganization;
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async addMemberToOrganization(addMember: AddMemberDto, orgId: string) {
+    try {
+      const data = await this.entityManager.transaction(async (manager) => {
+        const user = await this.userService.findByEmail(addMember.userEmail);
+        if (!user) {
+          throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
+        }
+
+        const userOrganization = await this.getUserOrganization(user.id, orgId);
+        if (userOrganization) {
+          throw new HttpException(
+            "User already in organization",
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        const newUserOrganization = await manager.save(UserOrganization, {
+          id: createId("userOrg"),
+          userId: user.email,
+          organizationId: orgId,
+          role: addMember.role,
+        });
+
+        return newUserOrganization;
+      });
+
+      return data;
     } catch (err) {
       throw new HttpException(
         err.message,

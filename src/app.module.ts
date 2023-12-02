@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { Organization, User, UserOrganization } from "./entities";
 import { AuthModule, OrganizationModule, UserModule } from "./service";
+import { JwtStrategy } from "./utils/guards";
 import { JWTModule } from "./utils/jwt.module";
 
 @Module({
@@ -31,6 +32,6 @@ import { JWTModule } from "./utils/jwt.module";
     OrganizationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

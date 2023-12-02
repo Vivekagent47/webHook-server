@@ -1,11 +1,10 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Organization, UserOrganization } from "src/entities";
+import { Module, forwardRef } from "@nestjs/common";
+import { UserModule } from "../user";
 import { OrganizationController } from "./organization.controller";
 import { OrganizationService } from "./organization.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Organization, UserOrganization])],
+  imports: [forwardRef(() => UserModule)],
   providers: [OrganizationService],
   controllers: [OrganizationController],
   exports: [OrganizationService],

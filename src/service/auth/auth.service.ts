@@ -28,7 +28,7 @@ export class AuthService {
         loginData.password,
       );
 
-      const userOrgs = await this.orgService.getOrganizationsByUserId(user.id);
+      const userOrgs = await this.orgService.getUserOrganizations(user.id);
 
       const tokens = await this.generateAuthToken(user, {
         orgId: userOrgs[0].organizationId,
@@ -53,14 +53,12 @@ export class AuthService {
       const newUser = await this.userService.createUser(user);
       await this.orgService.createOrganization(
         {
-          name: `${user.firstName} ${user.lastName}'s organization`,
+          name: `${user.email}'s organization`,
         },
         newUser.id,
       );
 
-      const userOrgs = await this.orgService.getOrganizationsByUserId(
-        newUser.id,
-      );
+      const userOrgs = await this.orgService.getUserOrganizations(newUser.id);
 
       const tokens = await this.generateAuthToken(newUser, {
         orgId: userOrgs[0].organizationId,
@@ -120,7 +118,7 @@ export class AuthService {
       }
 
       const user = await this.userService.findByEmail(decoded.email);
-      const userOrg = await this.orgService.getOrganizationByUserIdAndOrgId(
+      const userOrg = await this.orgService.getUserOrganization(
         user.id,
         decoded.orgId,
       );

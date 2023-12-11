@@ -18,7 +18,7 @@ export class ReturnTokenDto {
 export class ReturnAuthDataDto {
   tokens: ReturnTokenDto;
   user: User;
-  userOrganizations: UserOrganization[];
+  organizations: UserOrganization[];
 }
 
 export class RefreshTokenDto {

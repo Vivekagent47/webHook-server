@@ -1,20 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
+import { InjectEntityManager } from "@nestjs/typeorm";
 import { CreateUserDto } from "src/dtos";
 import { User } from "src/entities";
 import { createId } from "src/utils/help";
-import { Repository } from "typeorm";
+import { EntityManager } from "typeorm";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   async findByEmail(email: string) {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = this.entityManager.findOne(User, { where: { email } });
 
       return user;
     } catch (error) {
@@ -37,8 +37,8 @@ export class UserService {
       }
 
       const id = createId("user");
-      const newUser = this.userRepository.create({ ...user, id: id });
-      await this.userRepository.save(newUser);
+      const newUser = this.entityManager.create(User, { ...user, id: id });
+      await this.entityManager.save(User, newUser);
 
       return newUser;
     } catch (error) {
@@ -51,7 +51,9 @@ export class UserService {
 
   async patchUser(id: string, user: Partial<User>) {
     try {
-      const existingUser = await this.userRepository.findOne({ where: { id } });
+      const existingUser = await this.entityManager.findOne(User, {
+        where: { id },
+      });
 
       if (!existingUser) {
         throw new HttpException(
@@ -76,7 +78,7 @@ export class UserService {
 
   async validateUser(email: string, password: string) {
     try {
-      const user = await this.userRepository.findOne({ where: { email } });
+      const user = await this.entityManager.findOne(User, { where: { email } });
 
       if (user && (await user.comparePassword(password))) {
         return user;

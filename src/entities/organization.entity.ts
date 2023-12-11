@@ -38,7 +38,6 @@ export class Organization extends BaseEntity {
   @CreateDateColumn()
   created_at: Date;
 
-  @Index()
   @UpdateDateColumn()
   updated_at: Date;
 }

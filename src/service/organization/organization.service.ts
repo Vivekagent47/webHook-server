@@ -82,33 +82,18 @@ export class OrganizationService {
     }
   }
 
-  async getUserOrganization(userId: string, orgId: string) {
-    try {
-      const userOrganization = await this.entityManager.findOne(
-        UserOrganization,
-        {
-          where: { userId, organizationId: orgId },
-        },
-      );
-
-      return userOrganization;
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
   async addMemberToOrganization(addMember: AddMemberDto, orgId: string) {
     try {
-      const data = await this.entityManager.transaction(async (manager) => {
+      await this.entityManager.transaction(async (manager) => {
         const user = await this.userService.findByEmail(addMember.userEmail);
         if (!user) {
           throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
         }
 
-        const userOrganization = await this.getUserOrganization(user.id, orgId);
+        const userOrganization = (
+          await this.getUserOrganizations(user.id)
+        ).find((item) => item.organizationId === orgId);
+
         if (userOrganization) {
           throw new HttpException(
             "User already in organization",
@@ -116,17 +101,18 @@ export class OrganizationService {
           );
         }
 
-        const newUserOrganization = await manager.save(UserOrganization, {
+        await manager.save(UserOrganization, {
           id: createId("userOrg"),
           userId: user.email,
           organizationId: orgId,
           role: addMember.role,
         });
-
-        return newUserOrganization;
       });
 
-      return data;
+      return {
+        status: HttpStatus.OK,
+        message: "User added to organization",
+      };
     } catch (err) {
       throw new HttpException(
         err.message,

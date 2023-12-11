@@ -38,7 +38,7 @@ export class AuthService {
       return {
         tokens,
         user,
-        userOrganizations: userOrgs,
+        organizations: userOrgs,
       };
     } catch (err) {
       throw new HttpException(
@@ -68,7 +68,7 @@ export class AuthService {
       return {
         tokens,
         user: newUser,
-        userOrganizations: userOrgs,
+        organizations: userOrgs,
       };
     } catch (err) {
       throw new HttpException(
@@ -118,10 +118,9 @@ export class AuthService {
       }
 
       const user = await this.userService.findByEmail(decoded.email);
-      const userOrg = await this.orgService.getUserOrganization(
-        user.id,
-        decoded.orgId,
-      );
+      const userOrg = (
+        await this.orgService.getUserOrganizations(user.id)
+      ).find((item) => item.organizationId === decoded.orgId);
 
       if (!userOrg || !user) {
         throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);

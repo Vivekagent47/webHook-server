@@ -17,7 +17,6 @@ export class AuthController {
     try {
       return await this.authService.login(data);
     } catch (err) {
-      console.log(err);
       throw new HttpException(
         err.message,
         err.status || HttpStatus.BAD_REQUEST,

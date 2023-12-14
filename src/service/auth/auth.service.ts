@@ -97,19 +97,18 @@ export class AuthService {
       {
         sub: () => user.email,
         type: "refresh",
+        orgId: orgData.orgId,
         userId: user.id,
       },
       {
-        expiresIn: "7d",
+        expiresIn: "2d",
       },
     );
 
     return { accessToken, refreshToken };
   }
 
-  async tokenRefresh(
-    refreshToken: string,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  async tokenRefresh(refreshToken: string): Promise<ReturnAuthDataDto> {
     try {
       const decoded = this.jwtService.verify(refreshToken);
 
@@ -118,9 +117,10 @@ export class AuthService {
       }
 
       const user = await this.userService.findByEmail(decoded.email);
-      const userOrg = (
-        await this.orgService.getUserOrganizations(user.id)
-      ).find((item) => item.organizationId === decoded.orgId);
+      const userOrgs = await this.orgService.getUserOrganizations(user.id);
+      const userOrg = userOrgs.find(
+        (item) => item.organizationId === decoded.orgId,
+      );
 
       if (!userOrg || !user) {
         throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);
@@ -131,7 +131,11 @@ export class AuthService {
         role: userOrg.role,
       });
 
-      return tokens;
+      return {
+        tokens,
+        user,
+        organizations: userOrgs,
+      };
     } catch (err) {
       throw new HttpException(
         err.message,

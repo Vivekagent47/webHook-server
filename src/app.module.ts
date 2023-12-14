@@ -14,7 +14,7 @@ import { JWTModule } from "./utils/jwt.module";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: "mysql",
+        type: "postgres",
         host: configService.get("DATABASE_HOST"),
         port: +configService.get("DATABASE_PORT"),
         username: configService.get("DATABASE_USERNAME"),

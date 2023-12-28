@@ -31,7 +31,7 @@ export class AuthService {
       const userOrgs = await this.orgService.getUserOrganizations(user.id);
 
       const tokens = await this.generateAuthToken(user, {
-        orgId: userOrgs[0].organizationId,
+        orgId: userOrgs[0].id,
         role: userOrgs[0].role,
       });
 
@@ -61,7 +61,7 @@ export class AuthService {
       const userOrgs = await this.orgService.getUserOrganizations(newUser.id);
 
       const tokens = await this.generateAuthToken(newUser, {
-        orgId: userOrgs[0].organizationId,
+        orgId: userOrgs[0].id,
         role: userOrgs[0].role,
       });
 
@@ -118,16 +118,14 @@ export class AuthService {
 
       const user = await this.userService.findByEmail(decoded.email);
       const userOrgs = await this.orgService.getUserOrganizations(user.id);
-      const userOrg = userOrgs.find(
-        (item) => item.organizationId === decoded.orgId,
-      );
+      const userOrg = userOrgs.find((item) => item.id === decoded.orgId);
 
       if (!userOrg || !user) {
         throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);
       }
 
       const tokens = await this.generateAuthToken(user, {
-        orgId: userOrg.organizationId,
+        orgId: userOrg.id,
         role: userOrg.role,
       });
 

@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
-import { User, UserOrganization } from "src/entities";
+import { User } from "src/entities";
+import { UserOrganizationData } from "src/types";
 
 export class LoginDto {
   @IsEmail()
@@ -18,7 +19,7 @@ export class ReturnTokenDto {
 export class ReturnAuthDataDto {
   tokens: ReturnTokenDto;
   user: User;
-  organizations: UserOrganization[];
+  organizations: UserOrganizationData[];
 }
 
 export class RefreshTokenDto {

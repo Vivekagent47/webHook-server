@@ -27,4 +27,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   lastName: string;
+
+  @IsOptional()
+  lastActiveOrg: string;
 }

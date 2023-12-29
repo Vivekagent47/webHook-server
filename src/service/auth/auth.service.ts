@@ -35,6 +35,10 @@ export class AuthService {
         role: userOrgs[0].role,
       });
 
+      await this.userService.patchUser(user.id, {
+        refreshToken: tokens.refreshToken,
+      });
+
       return {
         tokens,
         user,
@@ -63,6 +67,10 @@ export class AuthService {
       const tokens = await this.generateAuthToken(newUser, {
         orgId: userOrgs[0].id,
         role: userOrgs[0].role,
+      });
+
+      await this.userService.patchUser(newUser.id, {
+        refreshToken: tokens.refreshToken,
       });
 
       return {
@@ -116,7 +124,10 @@ export class AuthService {
         throw new HttpException("Invalid token", HttpStatus.BAD_REQUEST);
       }
 
-      const user = await this.userService.findByEmail(decoded.email);
+      const user = await this.userService.validateRefreshToken(
+        decoded.userId,
+        refreshToken,
+      );
       const userOrgs = await this.orgService.getUserOrganizations(user.id);
       const userOrg = userOrgs.find((item) => item.id === decoded.orgId);
 
@@ -129,10 +140,35 @@ export class AuthService {
         role: userOrg.role,
       });
 
+      await this.userService.patchUser(user.id, {
+        refreshToken: tokens.refreshToken,
+      });
+
       return {
         tokens,
         user,
         organizations: userOrgs,
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async logout(userId: string): Promise<{
+    status: HttpStatus;
+    message: string;
+  }> {
+    try {
+      await this.userService.patchUser(userId, {
+        refreshToken: null,
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: "User logged out successfully",
       };
     } catch (err) {
       throw new HttpException(

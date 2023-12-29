@@ -45,4 +45,19 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Index({ unique: true })
+  @Exclude()
+  @Column({ nullable: true })
+  refreshToken: string;
+
+  @BeforeInsert()
+  hashRefreshToken() {
+    const salt = bcrypt.genSaltSync(10);
+    this.refreshToken = bcrypt.hashSync(this.id, salt);
+  }
+
+  async compareRefreshToken(token: string) {
+    return await bcrypt.compare(token, this.refreshToken);
+  }
 }

@@ -92,4 +92,26 @@ export class UserService {
       );
     }
   }
+
+  async validateRefreshToken(userId: string, refreshToken: string) {
+    try {
+      const user = await this.entityManager.findOne(User, {
+        where: { id: userId },
+      });
+
+      if (user && (await user.compareRefreshToken(refreshToken))) {
+        return user;
+      }
+
+      throw new HttpException(
+        "Invalid refresh token.",
+        HttpStatus.UNAUTHORIZED,
+      );
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

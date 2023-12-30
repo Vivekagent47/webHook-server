@@ -3,6 +3,7 @@ import { Exclude } from "class-transformer";
 import {
   BaseEntity,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -51,10 +52,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   refreshToken: string;
 
-  @BeforeInsert()
-  hashRefreshToken() {
-    const salt = bcrypt.genSaltSync(10);
-    this.refreshToken = bcrypt.hashSync(this.id, salt);
+  @BeforeUpdate()
+  async hashRefreshToken() {
+    const salt = await bcrypt.genSalt(10);
+    this.refreshToken = await bcrypt.hash(this.refreshToken, salt);
   }
 
   async compareRefreshToken(token: string) {

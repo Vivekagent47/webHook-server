@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto, LoginDto, ReturnAuthDataDto } from "src/dtos";
+import { CreateUserDto, LoginDto, ReturnTokenDto } from "src/dtos";
 import { User } from "src/entities";
 import { OrganizationService, UserService } from "src/service";
 
@@ -21,7 +21,7 @@ export class AuthService {
     private readonly orgService: OrganizationService,
   ) {}
 
-  async login(loginData: LoginDto): Promise<ReturnAuthDataDto> {
+  async login(loginData: LoginDto): Promise<ReturnTokenDto> {
     try {
       const user = await this.userService.validateUser(
         loginData.email,
@@ -40,9 +40,7 @@ export class AuthService {
       });
 
       return {
-        tokens,
-        user,
-        organizations: userOrgs,
+        ...tokens,
       };
     } catch (err) {
       throw new HttpException(
@@ -52,7 +50,7 @@ export class AuthService {
     }
   }
 
-  async registerUser(user: CreateUserDto): Promise<ReturnAuthDataDto> {
+  async registerUser(user: CreateUserDto): Promise<ReturnTokenDto> {
     try {
       const newUser = await this.userService.createUser(user);
       await this.orgService.createOrganization(
@@ -74,9 +72,7 @@ export class AuthService {
       });
 
       return {
-        tokens,
-        user: newUser,
-        organizations: userOrgs,
+        ...tokens,
       };
     } catch (err) {
       throw new HttpException(
@@ -93,11 +89,14 @@ export class AuthService {
       role: string;
     },
   ): Promise<{ accessToken: string; refreshToken: string }> {
+    delete user.password;
+    delete user.refreshToken;
+
     const accessToken = this.jwtService.sign({
       type: "access",
       role: orgData.role,
       email: user.email,
-      userId: user.id,
+      user: user,
       orgId: orgData.orgId,
     });
 
@@ -116,7 +115,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async tokenRefresh(refreshToken: string): Promise<ReturnAuthDataDto> {
+  async tokenRefresh(refreshToken: string): Promise<ReturnTokenDto> {
     try {
       const decoded = this.jwtService.verify(refreshToken);
 
@@ -145,9 +144,7 @@ export class AuthService {
       });
 
       return {
-        tokens,
-        user,
-        organizations: userOrgs,
+        ...tokens,
       };
     } catch (err) {
       throw new HttpException(

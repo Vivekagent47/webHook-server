@@ -43,7 +43,7 @@ export class AuthController {
   @Post("logout")
   async logout(@AuthUser() user: IAuthUserDecorator) {
     try {
-      return await this.authService.logout(user.userId);
+      return await this.authService.logout(user.user.id);
     } catch (err) {
       throw new HttpException(
         err.message,

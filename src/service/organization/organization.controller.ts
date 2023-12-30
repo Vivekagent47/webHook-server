@@ -32,4 +32,18 @@ export class OrganizationController {
       );
     }
   }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RoleGuard)
+  @Get("/all")
+  async getUserOrganizations(@AuthUser() user: IAuthUserDecorator) {
+    try {
+      return await this.orgService.getUserOrganizations(user.user.id);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

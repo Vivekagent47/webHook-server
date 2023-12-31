@@ -7,11 +7,11 @@ import {
 } from "@nestjs/common";
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { AddMemberDto, CreateOrganizationDto } from "src/dtos";
-import { Organization, UserOrganization, UserRole, User } from "src/entities";
+import { Organization, User, UserOrganization, UserRole } from "src/entities";
+import { OrganizationMember, UserOrganizationData } from "src/types";
 import { createId } from "src/utils/help";
 import { EntityManager } from "typeorm";
 import { UserService } from "../user";
-import { OrganizationMember, UserOrganizationData } from "src/types";
 
 @Injectable()
 export class OrganizationService {

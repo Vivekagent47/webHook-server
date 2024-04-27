@@ -20,7 +20,7 @@ import { JWTModule } from "./utils/jwt.module";
         password: configService.get("DATABASE_PASSWORD"),
         database: configService.get("DATABASE_NAME"),
         entities: [`${__dirname}/**/*.entity{.ts,.js}`],
-        migrations: [`${__dirname}/../../db/migrations/*{.ts,.js}`],
+        migrations: [`${__dirname}/../db/migrations/*{.ts,.js}`],
         migrationsTableName: "migrations",
       }),
       inject: [ConfigService],

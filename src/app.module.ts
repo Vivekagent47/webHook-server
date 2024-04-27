@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { Organization, User, UserOrganization } from "./entities";
 import { AuthModule, OrganizationModule, UserModule } from "./service";
 import { JwtStrategy } from "./utils/guards";
 import { JWTModule } from "./utils/jwt.module";
@@ -20,9 +19,9 @@ import { JWTModule } from "./utils/jwt.module";
         username: configService.get("DATABASE_USERNAME"),
         password: configService.get("DATABASE_PASSWORD"),
         database: configService.get("DATABASE_NAME"),
-        entities: [User, UserOrganization, Organization],
-        synchronize: true,
-        autoLoadEntities: true,
+        entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+        migrations: [`${__dirname}/../../db/migrations/*{.ts,.js}`],
+        migrationsTableName: "migrations",
       }),
       inject: [ConfigService],
     }),

@@ -106,7 +106,7 @@ export class OrganizationService {
     }
   }
 
-  async addMemberToOrganization(addMember: AddMemberDto, orgId: string) {
+  async addMemberToOrganization(orgId: string, addMember: AddMemberDto) {
     try {
       await this.entityManager.transaction(async (manager) => {
         const user = await this.userService.findByEmail(addMember.userEmail);
@@ -136,6 +136,52 @@ export class OrganizationService {
       return {
         status: HttpStatus.OK,
         message: "User added to organization",
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async removeMemberFromOrganization(orgId: string, userId: string) {
+    try {
+      await this.entityManager.transaction(async (manager) => {
+        const userOrganization = await manager.findOne(UserOrganization, {
+          where: { userId, organizationId: orgId },
+        });
+
+        if (!userOrganization) {
+          throw new HttpException(
+            "User not found in organization",
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        await manager.delete(UserOrganization, {
+          id: userOrganization.id,
+        });
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: "User removed from organization",
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateOrganizationDetails(orgId: string, org: Partial<Organization>) {
+    try {
+      await this.entityManager.update(Organization, { id: orgId }, org);
+      return {
+        status: HttpStatus.OK,
+        message: "Organization updated successfully",
       };
     } catch (err) {
       throw new HttpException(

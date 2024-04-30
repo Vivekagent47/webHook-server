@@ -1,73 +1,54 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Webhook Management Tool
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project aims to provide a webhook management tool that simplifies the process of managing and monitoring webhooks. It helps developers easily integrate webhooks into their applications and provides a user-friendly interface to manage webhook configurations and track their status.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- **Webhook Status Monitoring**: The tool allows users to view the status of their webhooks in real-time. They can see if the webhooks are successfully delivered, failed, or pending.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Webhook Configuration Management**: Users can easily configure and manage their webhooks through the tool's intuitive interface. They can add new webhooks, update existing ones, and delete unnecessary ones.
 
-## Installation
+- **Error Handling and Notifications**: The tool provides comprehensive error handling and notifications. In case of failed webhook deliveries or any other issues, users receive timely notifications and can take appropriate actions.
 
-```bash
-$ npm install
-```
+- **Developer-Friendly Infrastructure**: Our goal is to abstract away the complexities of asynchronous event-based communication, enabling developers to focus on building their applications rather than dealing with infrastructure concerns.
 
-## Running the app
+## Getting Started
 
-```bash
-# development
-$ npm run start
+To use the webhook management tool, follow these steps:
 
-# watch mode
-$ npm run start:dev
+#### Setup Database
 
-# production mode
-$ npm run start:prod
-```
+1. You also ofcourse, need to setup the DB on your local machine for deployment, So setup Postgress.
+2. You also need redis for this repo, So setup redis also.
+3. Configure the tool by updating the `.env` file with your preferred settings.
+4. Install dependencies: `npm install`
+5. For creating table run: `npm run migration:run`
+6. Run the application: `npm run start`
+7. Access the tool through your web browser at `http://localhost:8000`.
 
-## Test
+## Usage
 
-```bash
-# unit tests
-$ npm run test
+Once you have the webhook management tool up and running, you can start managing your webhooks through the provided user interface. The tool offers a simple and intuitive design, making it easy to navigate and perform actions such as adding, updating, and deleting webhooks.
 
-# e2e tests
-$ npm run test:e2e
+The status of each webhook is displayed in real-time, allowing you to monitor the success or failure of webhook deliveries. In case of any issues, you will be notified through the tool's notification system.
 
-# test coverage
-$ npm run test:cov
-```
+## Contributing
 
-## Support
+We welcome contributions to the webhook management tool project. If you would like to contribute, please follow these steps:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix: `git checkout -b feature-name`.
+3. Make your modifications and ensure they follow the project's coding guidelines.
+4. Commit your changes: `git commit -m "Add feature or fix bug"`.
+5. Push to the branch: `git push origin feature-name`.
+6. Create a pull request describing your changes.
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+If you have any questions or suggestions regarding the webhook management tool, please feel free to contact us at [email protected]
+
+We appreciate your interest and hope this tool simplifies your webhook management process, allowing you to focus on developing your products with ease.

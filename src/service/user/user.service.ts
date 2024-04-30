@@ -62,11 +62,7 @@ export class UserService {
         );
       }
 
-      const updatedUser = this.entityManager.create(User, {
-        ...user,
-      });
-
-      await this.entityManager.update(User, { id }, updatedUser);
+      await this.entityManager.update(User, { id }, user);
       return {
         status: HttpStatus.OK,
         message: "User updated successfully",

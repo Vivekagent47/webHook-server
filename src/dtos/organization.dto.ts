@@ -19,3 +19,8 @@ export class UpdateOrganizationDto {
   @IsNotEmpty()
   name: string;
 }
+
+export class UpdateMemberDto {
+  @IsEnum(UserRole)
+  role: UserRole;
+}

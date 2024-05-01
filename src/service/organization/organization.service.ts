@@ -114,9 +114,20 @@ export class OrganizationService {
           throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
         }
 
+        const org = await manager.findOne(Organization, {
+          where: { id: orgId },
+        });
+
+        if (!org) {
+          throw new HttpException(
+            "Organization not found",
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
         const userOrganization = (
           await this.getUserOrganizations(user.id)
-        ).find((item) => item.id === orgId);
+        ).find((item) => item.id === org.id);
 
         if (userOrganization) {
           throw new HttpException(
@@ -128,7 +139,7 @@ export class OrganizationService {
         await manager.save(UserOrganization, {
           id: createId("userOrg"),
           userId: user.email,
-          organizationId: orgId,
+          organizationId: org.id,
           role: addMember.role,
         });
       });
@@ -182,6 +193,26 @@ export class OrganizationService {
       return {
         status: HttpStatus.OK,
         message: "Organization updated successfully",
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async updateMemberRole(orgId: string, userId: string, role: UserRole) {
+    try {
+      await this.entityManager.update(
+        UserOrganization,
+        { organizationId: orgId, userId },
+        { role },
+      );
+
+      return {
+        status: HttpStatus.OK,
+        message: "User role updated successfully",
       };
     } catch (err) {
       throw new HttpException(

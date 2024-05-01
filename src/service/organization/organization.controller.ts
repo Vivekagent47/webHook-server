@@ -12,7 +12,7 @@ import { UserRole } from "src/entities";
 import { AuthUser, IAuthUserDecorator, Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { OrganizationService } from "./organization.service";
-import { AddMemberDto, UpdateOrganizationDto } from "src/dtos";
+import { AddMemberDto, UpdateMemberDto, UpdateOrganizationDto } from "src/dtos";
 
 @Controller("organization")
 export class OrganizationController {
@@ -89,6 +89,60 @@ export class OrganizationController {
       }
 
       return await this.orgService.addMemberToOrganization(user.orgId, body);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Patch("/remove-member/:orgId/:userId")
+  async removeMember(
+    @Param("orgId") orgId: string,
+    @Param("userId") userId: string,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      if (user.orgId !== orgId) {
+        throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
+      return await this.orgService.removeMemberFromOrganization(
+        user.orgId,
+        userId,
+      );
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @Patch("/update-member/:orgId/:userId")
+  async updateMemberRole(
+    @Param("orgId") orgId: string,
+    @Param("userId") userId: string,
+    @AuthUser() user: IAuthUserDecorator,
+    @Body() body: UpdateMemberDto,
+  ) {
+    try {
+      if (user.orgId !== orgId) {
+        throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
+      if (body.role === UserRole.OWNER) {
+        throw new HttpException("Cannot add owner", HttpStatus.BAD_REQUEST);
+      }
+
+      return await this.orgService.updateMemberRole(
+        user.orgId,
+        userId,
+        body.role,
+      );
     } catch (err) {
       throw new HttpException(
         err.message,

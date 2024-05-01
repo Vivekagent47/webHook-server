@@ -16,7 +16,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(UserAuthGuard)
-  @Patch("update")
+  @Patch("update/me")
   async update(
     @AuthUser() user: IAuthUserDecorator,
     @Body() body: UpdateUserDto,

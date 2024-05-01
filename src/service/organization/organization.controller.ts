@@ -4,6 +4,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Patch,
   UseGuards,
 } from "@nestjs/common";
@@ -51,12 +52,17 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @Patch("/update")
+  @Patch("/update/:id")
   async updateOrganizationDetails(
+    @Param("id") orgId: string,
     @AuthUser() user: IAuthUserDecorator,
     @Body() body: UpdateOrganizationDto,
   ) {
     try {
+      if (user.orgId !== orgId) {
+        throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
       return await this.orgService.updateOrganizationDetails(user.orgId, body);
     } catch (err) {
       throw new HttpException(
@@ -67,12 +73,17 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @Patch("/add-member")
+  @Patch("/add-member/:orgId")
   async addMember(
+    @Param("orgId") orgId: string,
     @AuthUser() user: IAuthUserDecorator,
     @Body() body: AddMemberDto,
   ) {
     try {
+      if (user.orgId !== orgId) {
+        throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
       if (body.role === UserRole.OWNER) {
         throw new HttpException("Cannot add owner", HttpStatus.BAD_REQUEST);
       }

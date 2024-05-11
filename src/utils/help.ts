@@ -1,5 +1,9 @@
-import { randomBytes } from "crypto";
+import { customAlphabet } from "nanoid";
+
+const alphabet =
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const nanoid = customAlphabet(alphabet, 16);
 
 export function createId(prefix: string) {
-  return `${prefix}_${randomBytes(16).toString("hex")}`;
+  return `${prefix}_${nanoid()}`;
 }

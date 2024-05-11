@@ -47,7 +47,6 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Index({ unique: true })
   @Exclude()
   @Column({ nullable: true })
   refreshToken: string;

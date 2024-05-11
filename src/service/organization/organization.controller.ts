@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -8,34 +9,15 @@ import {
   Patch,
   UseGuards,
 } from "@nestjs/common";
+import { AddMemberDto, UpdateMemberDto, UpdateOrganizationDto } from "src/dtos";
 import { UserRole } from "src/entities";
 import { AuthUser, IAuthUserDecorator, Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { OrganizationService } from "./organization.service";
-import { AddMemberDto, UpdateMemberDto, UpdateOrganizationDto } from "src/dtos";
 
 @Controller("organization")
 export class OrganizationController {
   constructor(private readonly orgService: OrganizationService) {}
-
-  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
-  @UseGuards(UserAuthGuard, RoleGuard)
-  @Get()
-  async getOrganizationDetails(@AuthUser() user: IAuthUserDecorator) {
-    try {
-      const data = await this.orgService.getOrganizationById(user.orgId);
-      if (!data) {
-        throw new HttpException("Invalid token", HttpStatus.UNAUTHORIZED);
-      }
-
-      return data;
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
   @UseGuards(UserAuthGuard, RoleGuard)
@@ -52,6 +34,7 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @UseGuards(UserAuthGuard, RoleGuard)
   @Patch("/update/:id")
   async updateOrganizationDetails(
     @Param("id") orgId: string,
@@ -73,6 +56,7 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @UseGuards(UserAuthGuard, RoleGuard)
   @Patch("/add-member/:orgId")
   async addMember(
     @Param("orgId") orgId: string,
@@ -98,7 +82,8 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
-  @Patch("/remove-member/:orgId/:userId")
+  @UseGuards(UserAuthGuard, RoleGuard)
+  @Delete("/remove-member/:orgId/:userId")
   async removeMember(
     @Param("orgId") orgId: string,
     @Param("userId") userId: string,
@@ -122,6 +107,7 @@ export class OrganizationController {
   }
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
+  @UseGuards(UserAuthGuard, RoleGuard)
   @Patch("/update-member/:orgId/:userId")
   async updateMemberRole(
     @Param("orgId") orgId: string,

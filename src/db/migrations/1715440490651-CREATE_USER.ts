@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CREATEUSER1714238053847 implements MigrationInterface {
-  name = "CREATEUSER1714238053847";
+export class CREATEUSER1715440490651 implements MigrationInterface {
+  name = "CREATEUSER1715440490651";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -10,15 +10,9 @@ export class CREATEUSER1714238053847 implements MigrationInterface {
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_e12875dfb3b1d92d7d7c5377e2" ON "user" ("email") `,
     );
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_03585d421deb10bbc326fffe4c" ON "user" ("refreshToken") `,
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DROP INDEX "public"."IDX_03585d421deb10bbc326fffe4c"`,
-    );
     await queryRunner.query(
       `DROP INDEX "public"."IDX_e12875dfb3b1d92d7d7c5377e2"`,
     );

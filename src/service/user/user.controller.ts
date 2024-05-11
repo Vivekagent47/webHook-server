@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Patch,
@@ -16,7 +17,20 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(UserAuthGuard)
-  @Patch("update/me")
+  @Get("me")
+  async getMyInfo(@AuthUser() user: IAuthUserDecorator) {
+    try {
+      return await this.userService.findByEmail(user.user.email);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @UseGuards(UserAuthGuard)
+  @Patch("me")
   async update(
     @AuthUser() user: IAuthUserDecorator,
     @Body() body: UpdateUserDto,

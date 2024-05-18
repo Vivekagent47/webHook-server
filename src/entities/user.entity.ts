@@ -54,6 +54,9 @@ export class User extends BaseEntity {
   @BeforeUpdate()
   async hashRefreshToken() {
     const salt = await bcrypt.genSalt(10);
+    if (this.refreshToken === null) {
+      return;
+    }
     this.refreshToken = await bcrypt.hash(this.refreshToken, salt);
   }
 

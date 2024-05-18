@@ -3,7 +3,14 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { AuthModule, OrganizationModule, UserModule } from "./service";
+import {
+  AuthModule,
+  ConnectionModule,
+  DestinationModule,
+  OrganizationModule,
+  SourceModule,
+  UserModule,
+} from "./service";
 import { JwtStrategy } from "./utils/guards";
 import { JWTModule } from "./utils/jwt.module";
 
@@ -29,6 +36,9 @@ import { JWTModule } from "./utils/jwt.module";
     AuthModule,
     UserModule,
     OrganizationModule,
+    SourceModule,
+    DestinationModule,
+    ConnectionModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

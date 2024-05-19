@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Post,
   UseGuards,
 } from "@nestjs/common";
 import { AddMemberDto, UpdateMemberDto, UpdateOrganizationDto } from "src/dtos";
@@ -55,9 +56,30 @@ export class OrganizationController {
     }
   }
 
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RoleGuard)
+  @Get("/members/:orgId")
+  async getOrganizationMembers(
+    @Param("orgId") orgId: string,
+    @AuthUser() user: IAuthUserDecorator,
+  ) {
+    try {
+      if (user.orgId !== orgId) {
+        throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
+      return await this.orgService.getOrganizationMembers(user.orgId);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
-  @Patch("/add-member/:orgId")
+  @Post("/add-member/:orgId")
   async addMember(
     @Param("orgId") orgId: string,
     @AuthUser() user: IAuthUserDecorator,
@@ -92,6 +114,13 @@ export class OrganizationController {
     try {
       if (user.orgId !== orgId) {
         throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
+      }
+
+      if (user.user.id === userId) {
+        throw new HttpException(
+          "Cannot remove yourself",
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return await this.orgService.removeMemberFromOrganization(

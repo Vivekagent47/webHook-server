@@ -92,7 +92,15 @@ export class OrganizationService {
       const members = await this.entityManager
         .createQueryBuilder(UserOrganization, "user_organization")
         .innerJoin(User, "user", "user_organization.userId = user.id")
-        .select(["user.*", "user_organization.role as role"])
+        .select([
+          "user.id as id",
+          'user.firstName as "firstName"',
+          'user.lastName as "lastName"',
+          "user.email as email",
+          "user_organization.role as role",
+          'user.createdAt as "createdAt"',
+          'user.updatedAt as "updatedAt"',
+        ])
         .where("user_organization.organizationId = :orgId", { orgId })
         .orderBy("user_organization.createdAt", "DESC")
         .getRawMany();
@@ -108,7 +116,7 @@ export class OrganizationService {
 
   async addMemberToOrganization(orgId: string, addMember: AddMemberDto) {
     try {
-      await this.entityManager.transaction(async (manager) => {
+      const member = await this.entityManager.transaction(async (manager) => {
         const user = await this.userService.findByEmail(addMember.userEmail);
         if (!user) {
           throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
@@ -136,18 +144,27 @@ export class OrganizationService {
           );
         }
 
-        await manager.save(UserOrganization, {
+        const newMember = manager.create(UserOrganization, {
           id: createId("userOrg"),
           userId: user.email,
           organizationId: org.id,
           role: addMember.role,
         });
+
+        await manager.save(UserOrganization, newMember);
+
+        return {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: newMember.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        };
       });
 
-      return {
-        status: HttpStatus.OK,
-        message: "User added to organization",
-      };
+      return member;
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -166,6 +183,13 @@ export class OrganizationService {
         if (!userOrganization) {
           throw new HttpException(
             "User not found in organization",
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        if (userOrganization.role === UserRole.OWNER) {
+          throw new HttpException(
+            "Cannot remove owner",
             HttpStatus.BAD_REQUEST,
           );
         }

@@ -228,6 +228,27 @@ export class OrganizationService {
 
   async updateMemberRole(orgId: string, userId: string, role: UserRole) {
     try {
+      const userOrganization = await this.entityManager.findOne(
+        UserOrganization,
+        {
+          where: { organizationId: orgId, userId },
+        },
+      );
+
+      if (!userOrganization) {
+        throw new HttpException(
+          "User not found in organization",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (userOrganization.role === UserRole.OWNER) {
+        throw new HttpException(
+          "Cannot update owner role",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       await this.entityManager.update(
         UserOrganization,
         { organizationId: orgId, userId },

@@ -36,7 +36,7 @@ export class OrganizationController {
 
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
-  @Patch("/update/:id")
+  @Patch("/:id")
   async updateOrganizationDetails(
     @Param("id") orgId: string,
     @AuthUser() user: IAuthUserDecorator,
@@ -151,6 +151,13 @@ export class OrganizationController {
 
       if (body.role === UserRole.OWNER) {
         throw new HttpException("Cannot add owner", HttpStatus.BAD_REQUEST);
+      }
+
+      if (user.user.id === userId) {
+        throw new HttpException(
+          "Cannot update your own role",
+          HttpStatus.BAD_REQUEST,
+        );
       }
 
       return await this.orgService.updateMemberRole(

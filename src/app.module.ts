@@ -1,8 +1,12 @@
+import { ExpressAdapter } from "@bull-board/express";
+import { BullBoardModule } from "@bull-board/nestjs";
+import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { BasicAuthMiddleware } from "./bullmq.middleware";
 import {
   AuthModule,
   ConnectionModule,
@@ -31,6 +35,21 @@ import { JWTModule } from "./utils/jwt.module";
         migrationsTableName: "migrations",
       }),
       inject: [ConfigService],
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get("REDIS_HOST"),
+          port: +configService.get("REDIS_PORT"),
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    BullBoardModule.forRoot({
+      route: "/queues",
+      adapter: ExpressAdapter,
+      middleware: BasicAuthMiddleware,
     }),
     JWTModule,
     AuthModule,

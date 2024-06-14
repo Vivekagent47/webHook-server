@@ -8,7 +8,7 @@ import {
 import { InjectEntityManager } from "@nestjs/typeorm";
 import { AddMemberDto, CreateOrganizationDto } from "src/dtos";
 import { Organization, User, UserOrganization, UserRole } from "src/entities";
-import { OrganizationMember, UserOrganizationData } from "src/types";
+import { IOrganizationMember, IUserOrganizationData } from "src/types";
 import { createId } from "src/utils/help";
 import { EntityManager } from "typeorm";
 import { UserService } from "../user";
@@ -78,7 +78,7 @@ export class OrganizationService {
         .orderBy("user_organization.createdAt", "DESC")
         .getRawMany();
 
-      return userOrganizations as UserOrganizationData[];
+      return userOrganizations as IUserOrganizationData[];
     } catch (err) {
       throw new HttpException(
         err.message,
@@ -105,7 +105,7 @@ export class OrganizationService {
         .orderBy("user_organization.createdAt", "DESC")
         .getRawMany();
 
-      return members as OrganizationMember[];
+      return members as IOrganizationMember[];
     } catch (err) {
       throw new HttpException(
         err.message,

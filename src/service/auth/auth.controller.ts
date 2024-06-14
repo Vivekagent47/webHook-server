@@ -6,15 +6,33 @@ import {
   Post,
   UseGuards,
 } from "@nestjs/common";
-import { CreateUserDto, LoginDto } from "src/dtos";
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import {
+  CreateUserDto,
+  LoginDto,
+  RefreshTokenDto,
+  ReturnTokenDto,
+} from "src/dtos";
 import { AuthUser, IAuthUserDecorator } from "src/utils/decorators";
 import { UserAuthGuard } from "src/utils/guards";
 import { AuthService } from "./auth.service";
 
+@ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiResponse({
+    type: ReturnTokenDto,
+    status: 201,
+    description: "Return access token and refresh token",
+  })
+  @ApiForbiddenResponse({ description: "Invalid credentials", status: 401 })
   @Post("login")
   async login(@Body() data: LoginDto) {
     try {
@@ -27,6 +45,12 @@ export class AuthController {
     }
   }
 
+  @ApiResponse({
+    type: ReturnTokenDto,
+    status: 201,
+    description: "Return access token and refresh token",
+  })
+  @ApiForbiddenResponse({ description: "Invalid credentials", status: 401 })
   @Post("register")
   async register(@Body() data: CreateUserDto) {
     try {
@@ -39,6 +63,11 @@ export class AuthController {
     }
   }
 
+  @ApiResponse({
+    status: 204,
+    description: "Logout successful",
+  })
+  @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   @Post("logout")
   async logout(@AuthUser() user: IAuthUserDecorator) {
@@ -52,8 +81,13 @@ export class AuthController {
     }
   }
 
+  @ApiResponse({
+    type: ReturnTokenDto,
+    status: 201,
+    description: "Return access token and refresh token",
+  })
   @Post("refresh")
-  async refreshToken(@Body() data: { refreshToken: string }) {
+  async refreshToken(@Body() data: RefreshTokenDto) {
     try {
       return await this.authService.tokenRefresh(data.refreshToken);
     } catch (err) {

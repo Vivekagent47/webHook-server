@@ -25,6 +25,7 @@ To use the webhook management tool, follow these steps:
 5. For creating table run: `npm run migration:run`
 6. Run the application: `npm run start`
 7. Access the tool through your web browser at `http://localhost:8000`.
+8. Read docs on the `http://localhost:8000/api/docs`.
 
 ## Usage
 

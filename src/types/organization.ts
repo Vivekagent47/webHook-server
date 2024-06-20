@@ -1,9 +1,20 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Organization, User, UserRole } from "src/entities";
 
-export type IUserOrganizationData = InstanceType<typeof Organization> & {
+export class IUserOrganizationData extends Organization {
+  @ApiProperty({
+    example: "member",
+    enum: UserRole,
+    description: "The role of the user in the organization",
+  })
   role: UserRole;
-};
+}
 
-export type IOrganizationMember = InstanceType<typeof User> & {
+export class IOrganizationMember extends User {
+  @ApiProperty({
+    example: "member",
+    enum: UserRole,
+    description: "The role of the user in the organization",
+  })
   role: UserRole;
-};
+}

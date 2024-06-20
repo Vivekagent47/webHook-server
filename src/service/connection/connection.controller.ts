@@ -15,7 +15,9 @@ import { UserRole } from "src/entities";
 import { AuthUser, IAuthUserDecorator, Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { ConnectionService } from "./connection.service";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Connection")
 @Controller("connection")
 export class ConnectionController {
   constructor(private readonly connectionService: ConnectionService) {}

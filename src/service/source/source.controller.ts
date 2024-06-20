@@ -14,7 +14,9 @@ import { UserRole } from "src/entities";
 import { AuthUser, IAuthUserDecorator, Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { SourceService } from "./source.service";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Source")
 @Controller("source")
 export class SourceController {
   constructor(private readonly sourceService: SourceService) {}

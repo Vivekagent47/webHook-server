@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
-  ApiForbiddenResponse,
+  ApiOperation,
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
@@ -32,7 +32,10 @@ export class AuthController {
     status: 201,
     description: "Return access token and refresh token",
   })
-  @ApiForbiddenResponse({ description: "Invalid credentials", status: 401 })
+  @ApiOperation({
+    summary: "Login user",
+    description: "Login user and return access token and refresh token",
+  })
   @Post("login")
   async login(@Body() data: LoginDto) {
     try {
@@ -50,7 +53,10 @@ export class AuthController {
     status: 201,
     description: "Return access token and refresh token",
   })
-  @ApiForbiddenResponse({ description: "Invalid credentials", status: 401 })
+  @ApiOperation({
+    summary: "Register user",
+    description: "Register user and return access token and refresh token",
+  })
   @Post("register")
   async register(@Body() data: CreateUserDto) {
     try {
@@ -63,11 +69,15 @@ export class AuthController {
     }
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 204,
     description: "Logout successful",
   })
-  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Logout user",
+    description: "Logout user and revoke refresh token",
+  })
   @UseGuards(UserAuthGuard)
   @Post("logout")
   async logout(@AuthUser() user: IAuthUserDecorator) {
@@ -85,6 +95,11 @@ export class AuthController {
     type: ReturnTokenDto,
     status: 201,
     description: "Return access token and refresh token",
+  })
+  @ApiOperation({
+    summary: "Refresh token",
+    description:
+      "Generate new access token and refresh token using refresh token",
   })
   @Post("refresh")
   async refreshToken(@Body() data: RefreshTokenDto) {

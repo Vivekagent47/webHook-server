@@ -9,7 +9,9 @@ import { UserRole } from "src/entities";
 import { Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { DestinationService } from "./destination.service";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("Destination")
 @Controller("destination")
 export class DestinationController {
   constructor(private readonly destinationService: DestinationService) {}

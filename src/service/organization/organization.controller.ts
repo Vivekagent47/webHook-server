@@ -15,15 +15,40 @@ import { UserRole } from "src/entities";
 import { AuthUser, IAuthUserDecorator, Roles } from "src/utils/decorators";
 import { RoleGuard, UserAuthGuard } from "src/utils/guards";
 import { OrganizationService } from "./organization.service";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+import {
+  IDeleteResponse,
+  IOrganizationMember,
+  IPatchResponse,
+  IUserOrganizationData,
+} from "src/types";
 
+@ApiTags("Organization")
 @Controller("organization")
 export class OrganizationController {
   constructor(private readonly orgService: OrganizationService) {}
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: "Get all organizations you have access.",
+    type: [IUserOrganizationData],
+  })
+  @ApiOperation({
+    summary: "Get all organizations",
+    description: "Get all organizations you have access.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Get("/all")
-  async getUserOrganizations(@AuthUser() user: IAuthUserDecorator) {
+  async getUserOrganizations(
+    @AuthUser() user: IAuthUserDecorator,
+  ): Promise<IUserOrganizationData[]> {
     try {
       return await this.orgService.getUserOrganizations(user.user.id);
     } catch (err) {
@@ -34,6 +59,16 @@ export class OrganizationController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    description: "Update organization.",
+    type: IPatchResponse,
+  })
+  @ApiOperation({
+    summary: "Update organization",
+    description: "Update organization details.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Patch("/:id")
@@ -56,6 +91,16 @@ export class OrganizationController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: "Get all members of the organization.",
+    type: [IOrganizationMember],
+  })
+  @ApiOperation({
+    summary: "Get all members",
+    description: "Get all members of the organization.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Get("/members/:orgId")
@@ -77,6 +122,16 @@ export class OrganizationController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    description: "Add a new member to the organization.",
+    type: IOrganizationMember,
+  })
+  @ApiOperation({
+    summary: "Add member",
+    description: "Add a new member to the organization.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Post("/add-member/:orgId")
@@ -103,6 +158,16 @@ export class OrganizationController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: "Remove a member from the organization.",
+    type: IDeleteResponse,
+  })
+  @ApiOperation({
+    summary: "Remove member",
+    description: "Remove a member from the organization.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Delete("/remove-member/:orgId/:userId")
@@ -135,6 +200,16 @@ export class OrganizationController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    description: "Update the role of a member in the organization.",
+    type: IPatchResponse,
+  })
+  @ApiOperation({
+    summary: "Update member",
+    description: "Update the member in the organization.",
+  })
   @Roles(UserRole.OWNER, UserRole.ADMIN)
   @UseGuards(UserAuthGuard, RoleGuard)
   @Patch("/update-member/:orgId/:userId")

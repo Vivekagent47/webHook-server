@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import {
@@ -14,9 +15,18 @@ import {
 
 @Entity("user")
 export class User extends BaseEntity {
+  @ApiProperty({
+    example: "user_12345466anjk",
+    description: "The id of the user",
+  })
   @PrimaryColumn()
   id: string;
 
+  @ApiProperty({
+    example: "user@gmail.com",
+    type: "string",
+    description: "The email of the user",
+  })
   @Index({ unique: true })
   @Column()
   email: string;
@@ -35,15 +45,35 @@ export class User extends BaseEntity {
     return await bcrypt.compare(attempt, this.password);
   }
 
+  @ApiProperty({
+    example: "John",
+    type: "string",
+    description: "The first name of the user",
+  })
   @Column()
   firstName: string;
 
+  @ApiProperty({
+    example: "Doe",
+    type: "string",
+    description: "The last name of the user",
+  })
   @Column()
   lastName: string;
 
+  @ApiProperty({
+    example: new Date(),
+    type: Date,
+    description: "The date the user was created",
+  })
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty({
+    example: new Date(),
+    type: Date,
+    description: "The date the user was last updated",
+  })
   @UpdateDateColumn()
   updatedAt: Date;
 

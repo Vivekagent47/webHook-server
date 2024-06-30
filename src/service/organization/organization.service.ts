@@ -146,7 +146,7 @@ export class OrganizationService {
 
         const newMember = manager.create(UserOrganization, {
           id: createId("userOrg"),
-          userId: user.email,
+          userId: user.id,
           organizationId: org.id,
           role: addMember.role,
         });

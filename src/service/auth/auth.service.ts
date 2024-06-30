@@ -174,4 +174,37 @@ export class AuthService {
       );
     }
   }
+
+  async changeOrg(userId: string, orgId: string) {
+    try {
+      const userOrgs = await this.orgService.getUserOrganizations(userId);
+      const userOrg = userOrgs.find((item) => item.id === orgId);
+
+      if (!userOrg) {
+        throw new HttpException(
+          "User does not belong to the organization",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const user = await this.userService.getUserById(userId);
+      const tokens = await this.generateAuthToken(user, {
+        orgId: userOrg.id,
+        role: userOrg.role,
+      });
+
+      await this.userService.patchUser(user.id, {
+        refreshToken: tokens.refreshToken,
+      });
+
+      return {
+        ...tokens,
+      };
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }

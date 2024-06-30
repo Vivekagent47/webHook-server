@@ -3,6 +3,7 @@ import {
   Controller,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from "@nestjs/common";
@@ -105,6 +106,32 @@ export class AuthController {
   async refreshToken(@Body() data: RefreshTokenDto) {
     try {
       return await this.authService.tokenRefresh(data.refreshToken);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    description: "Return access token and refresh token",
+  })
+  @ApiOperation({
+    summary: "Change Org",
+    description:
+      "Change user org and return new access token and refresh token",
+  })
+  @UseGuards(UserAuthGuard)
+  @Post("change-org/:orgId")
+  async changeOrg(
+    @AuthUser() user: IAuthUserDecorator,
+    @Param("orgId") orgId: string,
+  ) {
+    try {
+      return await this.authService.changeOrg(user.user.id, orgId);
     } catch (err) {
       throw new HttpException(
         err.message,

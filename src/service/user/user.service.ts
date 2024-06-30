@@ -49,6 +49,28 @@ export class UserService {
     }
   }
 
+  async getUserById(id: string) {
+    try {
+      const user = await this.entityManager.findOne(User, {
+        where: { id },
+      });
+
+      if (!user) {
+        throw new HttpException(
+          "User with this id does not exist",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return user;
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async patchUser(id: string, user: Partial<User>) {
     try {
       const existingUser = await this.entityManager.findOne(User, {

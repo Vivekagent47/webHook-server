@@ -31,30 +31,6 @@ export class SourceController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
-    description: "Returns all sources",
-    type: [Source],
-  })
-  @ApiOperation({
-    summary: "Get sources",
-    description: "Get all sources of the organization.",
-  })
-  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
-  @UseGuards(UserAuthGuard, RoleGuard)
-  @Get()
-  async getSources(@AuthUser() user: IAuthUserDecorator) {
-    try {
-      return await this.sourceService.getAllSources(user.orgId);
-    } catch (err) {
-      throw new HttpException(
-        err.message,
-        err.status || HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  @ApiBearerAuth()
-  @ApiResponse({
-    status: 200,
     description: "Returns the source",
     type: Source,
   })
@@ -71,6 +47,30 @@ export class SourceController {
   ) {
     try {
       return await this.sourceService.createSource(user.orgId, data);
+    } catch (err) {
+      throw new HttpException(
+        err.message,
+        err.status || HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: "Returns all sources",
+    type: [Source],
+  })
+  @ApiOperation({
+    summary: "Get sources",
+    description: "Get all sources of the organization.",
+  })
+  @Roles(UserRole.OWNER, UserRole.ADMIN, UserRole.MEMBER)
+  @UseGuards(UserAuthGuard, RoleGuard)
+  @Get("/all")
+  async getSources(@AuthUser() user: IAuthUserDecorator) {
+    try {
+      return await this.sourceService.getAllSources(user.orgId);
     } catch (err) {
       throw new HttpException(
         err.message,

@@ -30,6 +30,10 @@ async function bootstrap() {
       theme: "deepSpace",
       hideModels: true,
       hideDownloadButton: true,
+      metaData: {
+        title: "API Reference",
+        description: "API Reference for APIs",
+      },
       spec: {
         content: document,
       },
